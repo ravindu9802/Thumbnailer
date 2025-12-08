@@ -1,0 +1,38 @@
+<script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/9.0.6/signalr.min.js"></script>
+
+<script>
+    let connection = new signalR.HubConnectionBuilder()
+        .withUrl("https://localhost:7224/hub")
+        .build();
+
+    connection.on("ReceiveConnectionId", data => {
+        console.log(data);
+    });
+
+    connection.on("JobAccepted", data => {
+        console.log(data);
+    });
+
+    connection.on("JobProcessing", data => {
+        console.log(data);
+    });
+
+    connection.on("JobCompleted", data => {
+        console.log(data);
+        connection.stop()
+            .then(() => console.log("Connection closed"))
+            .catch(err => console.error("Error while stopping:", err));
+    });
+
+    connection.on("JobFailed", data => {
+        console.log(data);
+        connection.stop()
+            .then(() => console.log("Connection closed"))
+            .catch(err => console.error("Error while stopping:", err));
+    });
+
+    //connection.start();
+    //    .then(() => connection.invoke("send", "Hello"));
+
+    connection.start();
+</script>

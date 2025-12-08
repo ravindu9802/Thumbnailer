@@ -1,0 +1,6 @@
+@Thumbnailer_HostAddress = http://localhost:5147
+
+GET {{Thumbnailer_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
