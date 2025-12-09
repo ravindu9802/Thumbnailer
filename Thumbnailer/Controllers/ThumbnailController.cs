@@ -1,6 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
+using RabbitMQ.Client;
 using System.Collections.Concurrent;
+using System.Text;
+using System.Text.Json;
 using System.Threading.Channels;
 using Thumbnailer.Hubs;
 using Thumbnailer.Models;
@@ -14,7 +17,8 @@ public class ThumbnailController(
     Channel<ThumbnailGenerationJob> _channel,
     ImageService _imageService,
     ConcurrentDictionary<string, ThumbnailGenerationStatus> _statusDictionary,
-    IHubContext<ThumbnailGenerationHub> _hubContext
+    IHubContext<ThumbnailGenerationHub> _hubContext,
+    IChannel _rabbitMQChannel
     ) : ControllerBase
 {
 
@@ -33,10 +37,17 @@ public class ThumbnailController(
         string imagePath = await _imageService.UploadImageAsync(file, folderPath, fileName);
 
         var job = new ThumbnailGenerationJob(folderId, imagePath, folderPath, connId);
-        await _channel.Writer.WriteAsync(job);
+        //await _channel.Writer.WriteAsync(job);
 
         // Set status or send notification to signalR
         _statusDictionary[folderId] = ThumbnailGenerationStatus.Queued;
+        await _rabbitMQChannel.BasicPublishAsync(
+            exchange: "",
+            routingKey: "thumbnail_jobs",
+            mandatory: true,
+            basicProperties: new BasicProperties { Persistent = true},
+            body: Encoding.UTF8.GetBytes(JsonSerializer.Serialize(job))
+        );
         await _hubContext.Clients.Client(connId).SendAsync("JobAccepted", 
             new { message = "Thumbnail job accpeted.", status = ThumbnailGenerationStatus.Queued.ToString() });
 

@@ -1,13 +1,25 @@
+using RabbitMQ.Client;
 using System.Collections.Concurrent;
 using System.Threading.Channels;
 using Thumbnailer.Hubs;
 using Thumbnailer.Models;
 using Thumbnailer.Services;
-//using SignalRChat.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+var factory = new ConnectionFactory { HostName = "localhost" };
+using var connection = await factory.CreateConnectionAsync();
+using var channel = await connection.CreateChannelAsync();
+
+await channel.QueueDeclareAsync(
+    queue: "thumbnail_jobs",
+    durable: true,
+    exclusive: false,
+    autoDelete: false,
+    arguments: null);
+
+builder.Services.AddSingleton<IChannel>(channel);
 
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
