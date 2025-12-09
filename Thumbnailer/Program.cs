@@ -27,9 +27,16 @@ builder.Services.AddHostedService<ThumbnailGenerationService>();
 builder.Services.AddSingleton<ImageService>();
 
 builder.Services.AddSignalR();
-builder.Services.AddCors(policy =>
+builder.Services.AddCors(options =>
 {
-    policy.AddDefaultPolicy(builder =>
+    options.AddDefaultPolicy(builder =>
+    {
+        builder.AllowAnyHeader()
+               .AllowAnyMethod()
+               .SetIsOriginAllowed(_ => true)
+               .AllowCredentials();
+    });
+    options.AddPolicy("AllowAll", builder =>
     {
         builder.AllowAnyHeader()
                .AllowAnyMethod()
