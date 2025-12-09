@@ -1,4 +1,4 @@
 # Thumbnailer
 
-# run RabbitMQ docker instance
-# docker run -d --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:management
+* Run RabbitMQ docker instance <br>
+docker run -d --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:management
