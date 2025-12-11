@@ -1,4 +1,5 @@
 using RabbitMQ.Client;
+using Scalar.AspNetCore;
 using System.Collections.Concurrent;
 using System.Threading.Channels;
 using Thumbnailer.Hubs;
@@ -63,6 +64,7 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
+    app.MapScalarApiReference();
 }
 
 app.UseHttpsRedirection();
