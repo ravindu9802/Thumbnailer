@@ -1,0 +1,6 @@
+@Thumbnailer.Gateway_HostAddress = http://localhost:5027
+
+GET {{Thumbnailer.Gateway_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
