@@ -1,4 +1,4 @@
-﻿namespace Thumbnailer.Models;
+﻿namespace Thumbnailer.Domain.Models;
 
 public enum ThumbnailGenerationStatus
 {

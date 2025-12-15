@@ -1,4 +1,6 @@
 <Solution>
+  <Project Path="Thumbnailer.Application/Thumbnailer.Application.csproj" Id="bd1612b6-c4bd-4e6e-9c05-a026c040a1f1" />
+  <Project Path="Thumbnailer.Domain/Thumbnailer.Domain.csproj" Id="81c792c3-4718-4f8d-b474-f4b6f591cbbb" />
   <Project Path="Thumbnailer.Gateway/Thumbnailer.Gateway.csproj" Id="c4ea9249-25c8-45d4-88b0-bb0733165cc3" />
-  <Project Path="Thumbnailer/Thumbnailer.csproj" />
+  <Project Path="Thumbnailer/Thumbnailer.Api.csproj" />
 </Solution>

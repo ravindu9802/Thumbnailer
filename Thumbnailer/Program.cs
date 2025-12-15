@@ -1,26 +1,17 @@
-using RabbitMQ.Client;
+using Microsoft.AspNetCore.HttpOverrides;
 using Scalar.AspNetCore;
-using System.Collections.Concurrent;
+using System.Reflection;
 using System.Threading.Channels;
-using Thumbnailer.Hubs;
-using Thumbnailer.Models;
-using Thumbnailer.Services;
+using Thumbnailer.Application;
+using Thumbnailer.Application.Hubs;
+using Thumbnailer.Domain.Contracts;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-var factory = new ConnectionFactory { HostName = "localhost" };
-using var connection = await factory.CreateConnectionAsync();
-using var channel = await connection.CreateChannelAsync();
-
-await channel.QueueDeclareAsync(
-    queue: "thumbnail_jobs",
-    durable: true,
-    exclusive: false,
-    autoDelete: false,
-    arguments: null);
-
-builder.Services.AddSingleton<IChannel>(channel);
+// Register MediatR Service
+builder.Services.AddMediatR(
+    cfg => cfg.RegisterServicesFromAssemblies(
+        [Assembly.GetAssembly(typeof(ApplicationServiceExtensions))!]));
 
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
@@ -34,10 +25,6 @@ builder.Services.AddSingleton(_ =>
     });
     return channel;
 });
-
-builder.Services.AddSingleton<ConcurrentDictionary<string, ThumbnailGenerationStatus>>();
-builder.Services.AddHostedService<ThumbnailGenerationService>();
-builder.Services.AddSingleton<ImageService>();
 
 builder.Services.AddSignalR();
 builder.Services.AddCors(options =>
@@ -58,6 +45,8 @@ builder.Services.AddCors(options =>
     });
 });
 
+builder.Services.AddApplicationServices();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -66,6 +55,14 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
     app.MapScalarApiReference();
 }
+
+// Forward Api Gateway Protocol and Host to mask original Scheme and Host
+app.UseForwardedHeaders(new ForwardedHeadersOptions
+{
+    ForwardedHeaders =
+        ForwardedHeaders.XForwardedProto |
+        ForwardedHeaders.XForwardedHost
+});
 
 app.UseHttpsRedirection();
 

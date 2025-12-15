@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.Logging;
 
-namespace Thumbnailer.Hubs;
+namespace Thumbnailer.Application.Hubs;
 
 public sealed class ThumbnailGenerationHub(ILogger<ThumbnailGenerationHub> _logger) : Hub
 {
@@ -21,6 +22,4 @@ public sealed class ThumbnailGenerationHub(ILogger<ThumbnailGenerationHub> _logg
         _logger.LogInformation($"Received message from {Context.ConnectionId}: {message}");
         await Clients.Client(connId).SendAsync("SendMessage", message);
     }
-
-
 }

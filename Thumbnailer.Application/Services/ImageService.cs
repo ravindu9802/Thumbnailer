@@ -1,13 +1,17 @@
-﻿using Microsoft.AspNetCore.StaticFiles;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.StaticFiles;
+using Microsoft.Extensions.Configuration;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Processing;
-using Thumbnailer.Models;
+using Thumbnailer.Domain.Models;
+using Thumbnailer.Domain.Services;
 
-namespace Thumbnailer.Services;
+namespace Thumbnailer.Application.Services;
 
-public class ImageService()
+public class ImageService(
+    IConfiguration _configuration) : IImageService
 {
-    private readonly int[] resizeWidths = [5, 25, 50, 75, 100];
+    public int[] GetResizeWidths() => _configuration.GetSection("ResizeWidths").Get<int[]>()!;
 
     public async Task<string> UploadImageAsync(IFormFile file, string folderPath, string fileName)
     {
@@ -33,15 +37,14 @@ public class ImageService()
 
     public async Task GenerateThumbnailAsync(string id, string orginalFilePath, string folderPath)
     {
-        foreach (var width in resizeWidths)
+        foreach (var width in GetResizeWidths())
         {
             string outputPath = Path.Combine(folderPath, $"w_{width}{Path.GetExtension(orginalFilePath)}");
             await ResizeImageAsync(GetFileStream(orginalFilePath), outputPath, width, 0);
-            Task.Delay(500).Wait();
         }
     }
 
-    public ImageResult GetThumbnailAsync(string folderPath, int? width)
+    public ImageResult GetThumbnail(string folderPath, int? width)
     {
         string? filePath;
         if (width is null)
@@ -84,10 +87,8 @@ public class ImageService()
 
     private async Task ResizeImageAsync(Stream input, string outputPath, int width, int height)
     {
-        using (var image = await Image.LoadAsync(input))
-        {
-            image.Mutate(x => x.Resize(width, height));
-            await image.SaveAsync(outputPath);
-        }
+        using var image = await Image.LoadAsync(input);
+        image.Mutate(x => x.Resize(width, height));
+        await image.SaveAsync(outputPath);
     }
 }
