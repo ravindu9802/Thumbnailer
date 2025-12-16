@@ -1,5 +1,5 @@
-﻿using MediatR;
-using System.Collections.Concurrent;
+﻿using System.Collections.Concurrent;
+using Thumbnailer.Application.Abstractions;
 using Thumbnailer.Domain.Models;
 using Thumbnailer.Domain.Services;
 
@@ -8,7 +8,7 @@ namespace Thumbnailer.Application.Thumbnail.GetStatus;
 internal sealed class GetStatusQueryHandler(
     ConcurrentDictionary<string, ThumbnailGenerationStatus> _statusDictionary,
      IImageService _imageService
-    ) : IRequestHandler<GetStatusQuery, GetStatusQueryResponse>
+    ) : IQueryHandler<GetStatusQuery, GetStatusQueryResponse>
 {
     public async Task<GetStatusQueryResponse> Handle(GetStatusQuery request, CancellationToken cancellationToken)
     {

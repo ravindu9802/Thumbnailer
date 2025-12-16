@@ -1,5 +1,5 @@
-﻿using MediatR;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
+using Thumbnailer.Application.Abstractions;
 using Thumbnailer.Domain.Models;
 using Thumbnailer.Domain.Services;
 
@@ -8,7 +8,7 @@ namespace Thumbnailer.Application.Thumbnail.Get;
 internal sealed class GetThumbnailQueryHandler(
     IImageService _imageService,
     IConfiguration _configuration
-    ) : IRequestHandler<GetThumbnailQuery, GetThumbnailQueryResponse>
+    ) : IQueryHandler<GetThumbnailQuery, GetThumbnailQueryResponse>
 {
     public async Task<GetThumbnailQueryResponse> Handle(GetThumbnailQuery request, CancellationToken cancellationToken)
     {
@@ -16,3 +16,4 @@ internal sealed class GetThumbnailQueryHandler(
         ImageResult result = _imageService.GetThumbnail(folderPath, request.Width);
         return new GetThumbnailQueryResponse(result.Stream, result.ContentType);
     }
+}

@@ -1,5 +1,6 @@
-﻿using MediatR;
+﻿using Thumbnailer.Application.Abstractions;
 
 namespace Thumbnailer.Application.Thumbnail.Get;
 
-public sealed record GetThumbnailQuery(string Id, int? Width) : IRequest<GetThumbnailQueryResponse>;
+public sealed record GetThumbnailQuery(string Id, int? Width) 
+    : IQuery<GetThumbnailQueryResponse>;

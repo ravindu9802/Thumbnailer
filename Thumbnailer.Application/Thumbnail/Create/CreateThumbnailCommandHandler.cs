@@ -1,10 +1,9 @@
-﻿using MediatR;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Configuration;
-using RabbitMQ.Client;
 using System.Collections.Concurrent;
 using System.Threading.Channels;
+using Thumbnailer.Application.Abstractions;
 using Thumbnailer.Application.Hubs;
 using Thumbnailer.Domain.Contracts;
 using Thumbnailer.Domain.Models;
@@ -19,7 +18,7 @@ internal sealed class CreateThumbnailCommandHandler(
     IImageService _imageService,
     IHubContext<ThumbnailGenerationHub> _hubContext
     //IChannel _rabbitMQChannel
-    ) : IRequestHandler<CreateThumbnailCommand, CreateThumbnailCommandResponse>
+    ) : ICommandHandler<CreateThumbnailCommand, CreateThumbnailCommandResponse>
 {
     public async Task<CreateThumbnailCommandResponse> Handle(CreateThumbnailCommand request, CancellationToken cancellationToken)
     {
